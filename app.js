@@ -33,7 +33,7 @@ function render() {
   });
   $('admin').textContent=passcode?'Lock admin':'Admin';
 }
-async function refresh(){ $('refresh').disabled=true;try{items=await api('list');render();$('status').textContent=passcode?'Select an item to edit or delete.':'Click an item to open it in a new tab.'}catch(e){$('status').textContent=`Could not load menus. ${e.message}`;if(!$('menus').children.length)render()}finally{$('refresh').disabled=false} }
+async function refresh(){ $('refresh').disabled=true;try{items=await api('list');render();$('status').textContent=passcode?'Select an item to edit or delete.':''}catch(e){$('status').textContent=`Could not load menus. ${e.message}`;if(!$('menus').children.length)render()}finally{$('refresh').disabled=false} }
 function edit(subject,item=null){editing={subject,id:item?.id};$('editor-title').textContent=`${item?'Edit':'Add'} item · ${subject}`;$('item-name').value=item?.name||'';$('item-url').value=item?.url||'';$('edit-error').textContent='';$('editor').showModal();$('item-name').focus()}
 $('admin').onclick=()=>{if(passcode){passcode='';render();$('status').textContent='Admin editing is locked.'}else{$('passcode').value='';$('login-error').textContent='';$('login').showModal();$('passcode').focus()}};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
