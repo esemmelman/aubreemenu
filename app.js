@@ -22,18 +22,18 @@ function render() {
     if(selections.has(subject)) list.value=selections.get(subject);
     if(list.selectedIndex<0 && rows.length) list.selectedIndex=0;
     const selected=()=>rows.find(i=>i.id===list.value);
-    const open=button('Open selected link ↗',()=>{const item=selected();if(item)window.open(item.url,'_blank','noopener,noreferrer')},'primary');open.disabled=!selected();
-    list.onchange=()=>{selections.set(subject,list.value);open.disabled=!selected()};
-    list.ondblclick=()=>open.click();list.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();open.click()}};
+    const open=()=>{const item=selected();if(item)window.open(item.url,'_blank','noopener,noreferrer')};
+    list.onchange=()=>{selections.set(subject,list.value)};
+    list.onclick=e=>{if(!passcode && e.target.tagName==='OPTION')open()};
+    list.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();open()}};
     card.append(list);
     if(!rows.length){const p=document.createElement('p');p.className='empty';p.textContent='No links yet. An admin can add them.';card.append(p)}
-    const actions=document.createElement('div');actions.className='actions';actions.append(open);card.append(actions);
     if(passcode){const admin=document.createElement('div');admin.className='admin-actions';admin.append(button('Add item',()=>edit(subject)),button('Edit selected',()=>{if(selected())edit(subject,selected())}),button('Delete selected',()=>{if(selected()){deleting=selected();$('delete-description').textContent=`Delete “${deleting.name}” from ${subject}?`;$('delete-error').textContent='';$('delete-dialog').showModal()}}));admin.children[1].disabled=admin.children[2].disabled=!rows.length;card.append(admin)}
     $('menus').append(card);
   });
   $('admin').textContent=passcode?'Lock admin':'Admin';
 }
-async function refresh(){ $('refresh').disabled=true;try{items=await api('list');render();$('status').textContent=passcode?'Admin editing is unlocked.':'Select a link below. Links open in a new tab.'}catch(e){$('status').textContent=`Could not load menus. ${e.message}`;if(!$('menus').children.length)render()}finally{$('refresh').disabled=false} }
+async function refresh(){ $('refresh').disabled=true;try{items=await api('list');render();$('status').textContent=passcode?'Select an item to edit or delete.':'Click an item to open it in a new tab.'}catch(e){$('status').textContent=`Could not load menus. ${e.message}`;if(!$('menus').children.length)render()}finally{$('refresh').disabled=false} }
 function edit(subject,item=null){editing={subject,id:item?.id};$('editor-title').textContent=`${item?'Edit':'Add'} item · ${subject}`;$('item-name').value=item?.name||'';$('item-url').value=item?.url||'';$('edit-error').textContent='';$('editor').showModal();$('item-name').focus()}
 $('admin').onclick=()=>{if(passcode){passcode='';render();$('status').textContent='Admin editing is locked.'}else{$('passcode').value='';$('login-error').textContent='';$('login').showModal();$('passcode').focus()}};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
