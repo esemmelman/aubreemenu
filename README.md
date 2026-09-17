@@ -1,6 +1,6 @@
 # Aubree's Learning Menu
 
-Accessible menus for Spanish, English, Physical Sciences, U.S. History, and Culinary. Each public item is a link that opens in a new tab when tapped or clicked. In admin mode, each subject has a native keyboard-accessible listbox for selecting an item to edit or delete.
+Accessible menus for Spanish, English, Physical Sciences, U.S. History, and Culinary. Each public item is a link that opens in the current tab when tapped or clicked; use Back to return to the menu. In admin mode, each subject has a native keyboard-accessible listbox for selecting an item to edit or delete.
 
 Text starts at 28px, with 34px and 42px options saved on the device. Admin unlocks add, edit, and delete controls. Lock admin when finished; reloading also locks editing.
 

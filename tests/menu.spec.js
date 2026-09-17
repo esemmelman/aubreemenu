@@ -33,15 +33,12 @@ test('five accessible menus, admin CRUD, text scaling and locking',async({page})
 });
 test('network errors provide a retry path',async({page})=>{await page.route('**/functions/v1/aubreemenu-api',r=>r.abort());await page.goto('/');await expect(page.getByRole('status')).toContainText('Could not load menus');await expect(page.getByRole('button',{name:'Refresh menus'})).toBeEnabled()});
 
-test('public menu links open from a mobile tap',async({page})=>{
+test('public menu links navigate from a mobile tap',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.route('**/functions/v1/aubreemenu-api',route=>route.fulfill({json:[{id:'1',subject:'Spanish',name:'Practice',url:'https://example.com/'}]}));
  await page.goto('/');
  const link=page.getByRole('link',{name:'Practice'});
  await expect(link).toHaveAttribute('href','https://example.com/');
- const popupPromise=page.waitForEvent('popup');
- await link.tap();
- const popup=await popupPromise;
- await expect(popup).toHaveURL('https://example.com/');
- await popup.close();
+ await Promise.all([page.waitForURL('https://example.com/'),link.tap()]);
+ await expect(page).toHaveURL('https://example.com/');
 });

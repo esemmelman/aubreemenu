@@ -28,7 +28,7 @@ function render() {
       const admin=document.createElement('div');admin.className='admin-actions';admin.append(button('Add item',()=>edit(subject)),button('Edit selected',()=>{if(selected())edit(subject,selected())}),button('Delete selected',()=>{if(selected()){deleting=selected();$('delete-description').textContent=`Delete “${deleting.name}” from ${subject}?`;$('delete-error').textContent='';$('delete-dialog').showModal()}}));admin.children[1].disabled=admin.children[2].disabled=!rows.length;card.append(admin);
     }else{
       const list=document.createElement('ul');list.className='subject-links';list.setAttribute('aria-labelledby',heading.id);
-      rows.forEach(item=>{const li=document.createElement('li');const link=document.createElement('a');link.textContent=item.name;link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';li.append(link);list.append(li)});
+      rows.forEach(item=>{const li=document.createElement('li');const link=document.createElement('a');link.textContent=item.name;link.href=item.url;li.append(link);list.append(li)});
       card.append(list);
     }
     if(!rows.length){const p=document.createElement('p');p.className='empty';p.textContent='No links yet. An admin can add them.';card.append(p)}
