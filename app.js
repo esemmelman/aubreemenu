@@ -16,19 +16,22 @@ function render() {
   subjects.forEach((subject,index) => {
     const card=document.createElement('section');card.className='subject';card.style.setProperty('--accent',colors[index]);
     const heading=document.createElement('h2');heading.id=`subject-${index}`;heading.textContent=subject;card.append(heading);
-    const list=document.createElement('select');list.size=5;list.setAttribute('aria-labelledby',heading.id);
     const rows=items.filter(i=>i.subject===subject);
-    rows.forEach(item=>{const option=new Option(item.name,item.id);list.add(option)});
-    if(selections.has(subject)) list.value=selections.get(subject);
-    if(list.selectedIndex<0 && rows.length) list.selectedIndex=0;
-    const selected=()=>rows.find(i=>i.id===list.value);
-    const open=()=>{const item=selected();if(item)window.open(item.url,'_blank','noopener,noreferrer')};
-    list.onchange=()=>{selections.set(subject,list.value)};
-    list.onclick=e=>{if(!passcode && e.target.tagName==='OPTION')open()};
-    list.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();open()}};
-    card.append(list);
+    if(passcode){
+      const list=document.createElement('select');list.size=5;list.setAttribute('aria-labelledby',heading.id);
+      rows.forEach(item=>{const option=new Option(item.name,item.id);list.add(option)});
+      if(selections.has(subject)) list.value=selections.get(subject);
+      if(list.selectedIndex<0 && rows.length) list.selectedIndex=0;
+      const selected=()=>rows.find(i=>i.id===list.value);
+      list.onchange=()=>{selections.set(subject,list.value)};
+      card.append(list);
+      const admin=document.createElement('div');admin.className='admin-actions';admin.append(button('Add item',()=>edit(subject)),button('Edit selected',()=>{if(selected())edit(subject,selected())}),button('Delete selected',()=>{if(selected()){deleting=selected();$('delete-description').textContent=`Delete “${deleting.name}” from ${subject}?`;$('delete-error').textContent='';$('delete-dialog').showModal()}}));admin.children[1].disabled=admin.children[2].disabled=!rows.length;card.append(admin);
+    }else{
+      const list=document.createElement('ul');list.className='subject-links';list.setAttribute('aria-labelledby',heading.id);
+      rows.forEach(item=>{const li=document.createElement('li');const link=document.createElement('a');link.textContent=item.name;link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';li.append(link);list.append(li)});
+      card.append(list);
+    }
     if(!rows.length){const p=document.createElement('p');p.className='empty';p.textContent='No links yet. An admin can add them.';card.append(p)}
-    if(passcode){const admin=document.createElement('div');admin.className='admin-actions';admin.append(button('Add item',()=>edit(subject)),button('Edit selected',()=>{if(selected())edit(subject,selected())}),button('Delete selected',()=>{if(selected()){deleting=selected();$('delete-description').textContent=`Delete “${deleting.name}” from ${subject}?`;$('delete-error').textContent='';$('delete-dialog').showModal()}}));admin.children[1].disabled=admin.children[2].disabled=!rows.length;card.append(admin)}
     $('menus').append(card);
   });
   $('admin').textContent=passcode?'Lock admin':'Admin';
